@@ -1,0 +1,1 @@
+# Le equirements est vide ce qui prouve que "main.py" n'utilise aucune librairie exterieure

@@ -3,9 +3,9 @@
 
 
 from typing import List
-from getData import getData
+from getData import readCSV
 
-wines = getData()
+wines = readCSV()
 
 
 class Input:

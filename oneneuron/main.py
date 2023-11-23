@@ -24,6 +24,7 @@ def getCost(w):
     return average_cost
 
 
+
 # Function qui est execute lorsque main.py se lance (Faire x iteration ou on ajuste un peu la weight dans le bon sens en fonction de la slope)
 def main():
     
@@ -42,8 +43,8 @@ def main():
     print(w)
         
         
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()
     
     
     

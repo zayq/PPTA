@@ -22,16 +22,18 @@ class NeuralNetwork():
         self.b1 = np.random.randn(11, 1) * np.sqrt(2 / 11)
         self.w2 = np.random.randn(11, 11) * np.sqrt(2 / 11)
         self.b2 = np.random.randn(11, 1) * np.sqrt(2 / 11)
+        
+        
         self.loss_history = []
+        self.accuracy_history = []
         self.training_outputs = training_data[-1]
         self. training_inputs = training_data[0:n - 1]
         mean = np.mean(self.training_inputs, axis=1, keepdims=True)
         std = np.std(self.training_inputs, axis=1, keepdims=True)
         self.training_inputs = (self.training_inputs - mean) / std
-                
-        self.iterations = 100000
+        self.iterations = 10000000
         self.a = 0.01
-
+        np.random.seed(0)
     def Loss(self, a2, y):
         loss = -np.mean(y * np.log(a2) + (1 - y) * np.log(1 - a2))
         return loss    
@@ -44,15 +46,20 @@ class NeuralNetwork():
             self.w1, self.b1, self.w2, self.b2 = self.UpdateParams(self.w1, self.b1, self.w2, self.b2, dw1, db1, dw2, db2, self.a)
             loss = self.Loss(a2, self.training_outputs)
             self.loss_history.append(loss)
-            if x % 10000 == 0:
-                print("Iteration: ", x)
-                #predictions = self.Predict(a2)
+            predictions = self.Predict(a2)
 
-                print(loss)
-                #print(self.Accuracy(predictions, self.training_outputs))
+            self.accuracy_history.append(self.Accuracy(predictions, self.training_outputs))
+            
+            
+            if x % 1000 == 0:
+                print("Iteration: ", x)
+                predictions = self.Predict(a2)
+
+                print(self.Accuracy(predictions, self.training_outputs))
             
         
-        
+
+    
     def Accuracy(self, p, y):
         return np.sum(p == y) / y.size
         
@@ -98,14 +105,15 @@ class NeuralNetwork():
         W1 = W1 - (alpha * dW1)
         b1 = b1 - (alpha * db1)    
         W2 = W2 - (alpha * dW2)  
-        b2 = b2 - (alpha * db2 )   
+        b2 = b2 - (alpha * db2)   
         return W1, b1, W2, b2
+
 
 NN = NeuralNetwork()
 
 NN.Train()
-plt.plot(NN.loss_history)
+plt.plot(NN.accuracy_history)
 plt.title('Performance de Mon model')
 plt.xlabel('Iteration')
-plt.ylabel('Loss')
+plt.ylabel('Accuracy')
 plt.show()

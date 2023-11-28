@@ -20,19 +20,20 @@ class NeuralNetwork():
         
         self.w1 = np.random.randn(11, 11) * np.sqrt(2 / 11)  
         self.b1 = np.random.randn(11, 1) * np.sqrt(2 / 11)
-        self.w2 = np.random.randn(11, 11) * np.sqrt(2 / 11)
+        self.w2 = np.random.randn(11, 1) * np.sqrt(2 / 11)
         self.b2 = np.random.randn(11, 1) * np.sqrt(2 / 11)
         
-        
+        self.m, self.n =  data.shape
         self.loss_history = []
         self.accuracy_history = []
         self.training_outputs = training_data[-1]
+
         self. training_inputs = training_data[0:n - 1]
         mean = np.mean(self.training_inputs, axis=1, keepdims=True)
         std = np.std(self.training_inputs, axis=1, keepdims=True)
         self.training_inputs = (self.training_inputs - mean) / std
-        self.iterations = 10000000
-        self.a = 0.01
+        self.iterations = 100000000
+        self.a = 0.001
         np.random.seed(0)
     def Loss(self, a2, y):
         loss = -np.mean(y * np.log(a2) + (1 - y) * np.log(1 - a2))
@@ -59,7 +60,10 @@ class NeuralNetwork():
             
         
 
-    
+    def one_hot(self, Y):
+        one_hot_Y = np.zeros((Y.size, int(Y.max()) + 1))
+        one_hot_Y[np.arange(Y.size), Y.astype(int)] = 1
+        return one_hot_Y.T
     def Accuracy(self, p, y):
         return np.sum(p == y) / y.size
         
@@ -85,20 +89,19 @@ class NeuralNetwork():
         a1 = self.ReLU(z1)
         z2 = self.w2.dot(a1) + self.b2 
         a2 = self.OutputActivation(z2)
+        print(a2)
         
         return z1, a1, z2, a2
 
     def BackWardPropagation(self, z1, a1, a2, w2, x, y):
-        
-        y = y.reshape(1, -1)
-        size = y.size
-        dz2 = a2 - y
-        dw2 = 1 / size * dz2.dot(a1.T)
-        db2 = 1 / size * np.sum(dz2)
+        one_hot_Y = self.one_hot(y)
+        dz2 = a2 - one_hot_Y
+        dw2 = 1 / self.m * dz2.dot(a1.T)
+        db2 = 1 / self.m * np.sum(dz2)
         
         dz1 = w2.T.dot(dz2) * self.ReLUDerivative(z1)
-        dw1 = 1 / size * dz1.dot(x.T)
-        db1 = 1 / size * np.sum(dz1)
+        dw1 = 1 / self.m * dz1.dot(x.T)
+        db1 = 1 / self.m * np.sum(dz1)
         return dw1, db1, dw2, db2
     
     def UpdateParams(self, W1, b1, W2, b2, dW1, db1, dW2, db2, alpha):
